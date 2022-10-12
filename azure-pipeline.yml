@@ -1,0 +1,100 @@
+trigger: none
+
+pool:
+  vmImage: windows-latest
+
+variables:
+  - name: SolutionName
+    value: PermitManagement
+  - name: ExportedSolutionsDirectory
+    value: ExportedSolutions
+  - name: GitEmail
+    value: 
+  - name: GitName
+    value: Automatic Build
+  - name: ServiceConnection
+    value: 
+
+steps:
+  - checkout: self
+    persistCredentials: true
+  - task: PowerPlatformToolInstaller@2
+    displayName: Install PP Tool
+    inputs:
+      DefaultVersion: true
+
+# Solutions logic #
+  - task: PowerPlatformPublishCustomizations@2
+    displayName: Publish customizations
+    inputs:
+      authenticationType: 'PowerPlatformSPN'
+      PowerPlatformSPN: $(ServiceConnection)
+
+  - task: PowerPlatformExportSolution@2
+    displayName: UM Sol export
+    inputs:
+      authenticationType: 'PowerPlatformSPN'
+      PowerPlatformSPN: $(ServiceConnection)
+      SolutionName: '$(SolutionName)'
+      SolutionOutputFile: '$(ExportedSolutionsDirectory)\$(SolutionName)UM.zip'
+      AsyncOperation: true
+      MaxAsyncWaitTime: '60'
+      ExportAutoNumberingSettings: true
+
+  - task: PowerShell@2 
+    displayName: UM Sol zip to repo
+    inputs:
+      targetType: 'inline'
+      script: |      
+        ls ${env:ExportedSolutionsDirectory}
+        git fetch
+        git config --global user.email ${env:GitEmail} 
+        git config --global user.name ${env:GitName}
+        git checkout main
+        git add ${env:ExportedSolutionsDirectory}
+        git commit -am "Added UM Solution Export ${env:SolutionName} as zip"
+        git push origin main
+
+  - task: PowerPlatformUnpackSolution@2
+    displayName: UM Sol export
+    inputs:
+      SolutionInputFile: '$(ExportedSolutionsDirectory)\$(SolutionName)_unmanaged.zip'
+      SolutionTargetFolder: '$(ExportedSolutionsDirectory)\$(SolutionName)'
+
+  - task: PowerShell@2
+    displayName: UM Sol folders to repo    
+    inputs:
+      targetType: 'inline'
+      script: |      
+        ls ${env:ExportedSolutionsDirectory}
+        git config --global user.email ${env:GitEmail}
+        git config --global user.name ${env:GitName}
+        git checkout main
+        git add ${env:ExportedSolutionsDirectory}\${env:SolutionName}Unmanaged
+        git commit -am "Added Solution Export ${env:SolutionName} unpacked"
+        git push origin main
+
+  - task: PowerPlatformExportSolution@2
+    displayName: M Sol export
+    inputs:
+      authenticationType: 'PowerPlatformSPN'
+      PowerPlatformSPN: $(ServiceConnection)
+      SolutionName: '$(SolutionName)'
+      SolutionOutputFile: '$(ExportedSolutionsDirectory)\$(SolutionName).zip'
+      Managed: true
+      AsyncOperation: true
+      MaxAsyncWaitTime: '60'
+      ExportAutoNumberingSettings: true
+
+  - task: PowerShell@2
+    displayName: M Sol zip to repo
+    inputs:
+      targetType: 'inline'
+      script: |      
+        ls ${env:ExportedSolutionsDirectory}
+        git config --global user.email ${env:GitEmail} 
+        git config --global user.name ${env:GitName}
+        git checkout main
+        git add ${env:ExportedSolutionsDirectory}
+        git commit -am "Added M Solution Export ${env:SolutionName} as zip"
+        git push origin main
