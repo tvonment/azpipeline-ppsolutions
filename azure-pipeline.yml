@@ -36,7 +36,7 @@ steps:
       authenticationType: 'PowerPlatformSPN'
       PowerPlatformSPN: $(ServiceConnection)
       SolutionName: '$(SolutionName)'
-      SolutionOutputFile: '$(ExportedSolutionsDirectory)\$(SolutionName)UM.zip'
+      SolutionOutputFile: '$(ExportedSolutionsDirectory)\$(SolutionName)_unmanaged.zip'
       AsyncOperation: true
       MaxAsyncWaitTime: '60'
       ExportAutoNumberingSettings: true
