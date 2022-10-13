@@ -34,7 +34,22 @@ Go to the Project Settings and add a new Service Connection
 Select Type Power Platform
 ![type pp](assets/servconn_pp.png)
 Fill in the information from the previous steps
-![type pp](assets/servconn_new.png)
+![Service connection new](assets/servconn_new.png)
 And Save
 
 # Configure Pipeline
+
+Complete the Variables Part in the Pipeline with your Values.
+![azpipe variables](assets/azpipe_var.png)
+
+In your Project go to Pipelines -> Pipelines -> New Pipeline
+![azpipe new](assets/azpipe_new.png)
+
+Select Azure Repos (Git)
+Choose from existing file and select your Pipeline
+![azpipe add existing pipeline](assets/azpipe_addex.png)
+
+RUN it :)
+
+
+
