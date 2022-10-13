@@ -29,6 +29,12 @@ Give your app the System Administrator Security Role.
 
 ## Create Service Connection
 Configure a new Service Connection in Azure DevOps
-
+Go to the Project Settings and add a new Service Connection
+![project settings](assets/servconn_projsett.png)
+Select Type Power Platform
+![type pp](assets/servconn_pp.png)
+Fill in the information from the previous steps
+![type pp](assets/servconn_new.png)
+And Save
 
 # Configure Pipeline
